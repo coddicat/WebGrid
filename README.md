@@ -132,3 +132,57 @@ public ActionResult SubmitWebGrid(GridModel<Person> gridModel)
           : query.OrderBy(person => person.LastName).ThenBy(x=>x.LastName)
   })
 ```
+
+### Filtering
+#### Textbox
+```csharp
+...
+  .AddColumn(new WebColumn<Person>(person => person.FirstName)
+  {
+      FilterFormat = column => WebGridHelper.FilterTextBox(column, Model.WebGridSettings, new { @class = "form-control" }),
+      FilterQuery = (query, searchString) => query.Where(x => x.FirstName.Contains(searchString))
+  })
+...
+```
+#### Dropdown
+```csharp
+///key for FilterQuery and value for display
+var genderDictionary = new Dictionary<string, string> { { Gender.Male.ToString(), "Man" }, { Gender.Female.ToString(), "Woman" } };
+Model.Grid
+    .AddColumn(new WebColumn<Person>(person => person.Gender)
+    {
+        FilterFormat = column => WebGridHelper.FilterDropDown(column, Model.WebGridSettings, genderDictionary),
+        FilterQuery = (query, selectedKey) =>
+        {
+            Gender gender;
+            return Enum.TryParse(selectedKey, out gender) ? query.Where(x => x.Gender == gender) : query;
+        }
+    });
+```
+
+### Custom Cell Display
+```csharp
+@{
+...
+   .AddColumn(new WebColumn<Person>("actions")
+   {
+      CellFormat = cell => Actions(cell)
+   });
+...
+}
+
+@helper Actions(WebCell<Person> cell)
+{
+    var personId = cell.Data.Id;
+    <div>
+        <button class="btn btn-sm btn-primary" onclick="editPerson(@personId)">
+            <span class="glyphicon glyphicon-edit"></span> 
+            Edit
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="removePerson(@personId)">
+            <span class="glyphicon glyphicon-remove"></span> 
+            Remove
+        </button>
+    </div>
+}
+```

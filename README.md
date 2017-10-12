@@ -160,13 +160,14 @@ Model.Grid
     });
 ```
 
-### Custom Cell Display
+### Custom Header and Cell Display
 ```csharp
 @{
 ...
    .AddColumn(new WebColumn<Person>("actions")
    {
-      CellFormat = cell => Actions(cell)
+      CellFormat = cell => Actions(cell),
+      CaptionFormat = CustomHeader()
    });
 ...
 }
@@ -184,5 +185,93 @@ Model.Grid
             Remove
         </button>
     </div>
+}
+
+@helper CustomHeader()
+{
+    <span class="glyphicon glyphicon-wrench"></span>
+}
+```
+
+## Row selection and Edit data in rows
+### Row selection
+#### _WebGridView.cshtml
+```csharp
+...
+  .AddColumn(WebGridHelper.SelectRowColumn<Person>())
+...
+  <button name="SubmitSelectedRows">Submit Selected Rows</button>
+  @Html.For(x => x.Grid, x => x.WebGridSettings, true)
+...
+```
+#### HomeController.cs
+```csharp
+public ActionResult SubmitWebGrid(GridModel<Person> gridModel)
+{
+    if(gridModel.Rows != null)
+    {
+        var selectedRowsById = gridModel.Rows.Where(x => x.Checked).Select(x => x.Key).ToArray();
+        //to do 
+    }
+    gridModel.Grid = new WebGrid<Person>(x => x.Id.ToString())
+    {
+        Datas = _personQuery
+    };
+    return PartialView("_WebGridView", gridModel);
+}
+```
+
+### Edit data in rows
+#### _WebGridView.cshtml
+```csharp
+...
+  Model.Grid.SaveChangesButton = true; //show saving button on the header 
+  var genderDictionary = new Dictionary<string, string> { { Gender.Male.ToString(), "Man" }, { Gender.Female.ToString(), "Woman" } };
+
+  Model.Grid
+      .AddColumn(new WebColumn<Person>(person => person.Gender)
+      {
+          CellFormat = cell => WebGridHelper.CellDropDown(cell, genderDictionary, (person, keyValue) =>
+          {
+              Gender gender;
+              return Enum.TryParse(keyValue.Key, out gender) ? person.Gender == gender : false;
+          }, new { @class = "form-control" })
+      })
+      .AddColumn(new WebColumn<Person>(person => person.FirstName)
+      {
+          CellFormat = cell => WebGridHelper.CellTextBox(cell, new { @class = "form-control" }),
+      })      
+...
+```
+#### HomeController.cs
+```csharp
+public ActionResult SubmitWebGrid(GridModel<Person> gridModel)
+{
+    if(gridModel.SaveChanges)
+    {
+        var changedRows = gridModel.Rows.Where(x => x.Changed);
+        foreach(WebRow row in changedRows)
+        {
+            int personId;
+            if(int.TryParse(row.Key, out personId))
+            {
+                Person person = PersonQuery.Single(x => x.Id == personId);
+                person.FirstName = row.ColumnValues["FirstName"];
+
+                Gender newGender;
+                if(Enum.TryParse(row.ColumnValues["Gender"], out newGender))
+                {
+                    person.Gender = newGender;
+                }
+            }
+        }
+        //Db SaveChanges
+    }
+    
+    gridModel.Grid = new WebGrid<Person>(x => x.Id.ToString())
+    {
+        Datas = _personQuery
+    };
+    return PartialView("_WebGridView", gridModel);
 }
 ```

@@ -97,5 +97,20 @@ namespace Solomonic.WebGrid
             return null;
         }
 
+        public static string GetMemberName<T, TValue>(Expression<Func<T, TValue>> expression)
+        {
+            var body = expression.Body is UnaryExpression
+                ? ((UnaryExpression)expression.Body).Operand as MemberExpression
+                : expression.Body as MemberExpression;
+
+            if (body != null && body.NodeType == ExpressionType.MemberAccess)
+            {
+                var member = (body).Member;
+                return member.Name;
+            }
+
+            return null;
+        }
+
     }
 }

@@ -15,6 +15,12 @@ namespace Solomonic.WebGrid.Models
         {
             Name = name;
         }
+        public WebColumn(Expression<Func<TData, dynamic>> dataValue)
+        {
+            DataValue = dataValue;
+            Name = CommonHelper.GetMemberName(dataValue);
+        }
+
         /// <summary>
         /// Name of column for identity
         /// </summary>

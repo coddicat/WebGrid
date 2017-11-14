@@ -150,7 +150,7 @@ namespace Solomonic.WebGrid
         /// <param name="selectedFunc">function that returned true for selected item of values</param>
         /// <param name="attributes"></param>
         /// <returns></returns>
-        public static HelperResult CellDropDown<TData>(WebCell<TData> cell, IDictionary<string, string> values, Func<TData, KeyValuePair<string, string>, bool> selectedFunc = null, object attributes = null)
+        public static HelperResult CellDropDown<TData, TKey>(WebCell<TData> cell, IDictionary<TKey, string> values, Func<TData, KeyValuePair<TKey, string>, bool> selectedFunc = null, object attributes = null)
         {
             var dropdown = new TagBuilder("select");
             dropdown.MergeAttributes(attributes.ToDictionary());
@@ -159,7 +159,7 @@ namespace Solomonic.WebGrid
             foreach (var value in values)
             {
                 var option = new TagBuilder("option");
-                option.Attributes.Add("value", value.Key);
+                option.Attributes.Add("value", value.Key.ToString());
                 option.InnerHtml += value.Value;
 
                 if (selectedFunc != null)
@@ -173,7 +173,7 @@ namespace Solomonic.WebGrid
                 else
                 {
                     var cellValue = GetData(cell.Column, cell.Data);
-                    if (cellValue == value.Key)
+                    if (cellValue == value.Key.ToString())
                     {
                         option.Attributes.Add("selected", "true");
                     }
@@ -291,24 +291,24 @@ namespace Solomonic.WebGrid
         /// <param name="values">values for dropdown</param>
         /// <param name="attributes">html attributes</param>
         /// <returns></returns>
-        public static HelperResult FilterDropDown<TData>(WebColumn<TData> webColumn, WebGridSettings webSettings, IDictionary<string, string> values,
+        public static HelperResult FilterDropDown<TData, TKey>(WebColumn<TData> webColumn, WebGridSettings webSettings, IDictionary<TKey, string> values,
             object attributes = null)
         {
             var dropdown = new TagBuilder("select");
             dropdown.MergeAttributes(attributes.ToDictionary());
             dropdown.Attributes.Add("name", string.Format("WebGridSettings.Filters[{0}].FilterString", webColumn.Name));
             dropdown.Attributes.Add("solomonic-dropdownfilter", "");
-            var filterValues = (values ?? new Dictionary<string, string>()).ToList();
+            var filterValues = (values?.ToDictionary(x => x.Key.ToString(), x => x.Value) ?? new Dictionary<string, string>()).ToList();
             filterValues.Insert(0, new KeyValuePair<string, string>("", WebGridWords.NoFilter));
 
             foreach (var value in filterValues.ToDictionary(a => a.Key, a => a.Value))
             {
                 var option = new TagBuilder("option");
-                option.Attributes.Add("value", value.Key);
+                option.Attributes.Add("value", value.Key.ToString());
                 option.InnerHtml += value.Value;
 
                 if (webSettings != null && webSettings.Filters != null &&
-                    webSettings.Filters.ContainsKey(webColumn.Name) && webSettings.Filters[webColumn.Name].FilterString == value.Key)
+                    webSettings.Filters.ContainsKey(webColumn.Name) && webSettings.Filters[webColumn.Name].FilterString == value.Key.ToString())
                 {
                     option.Attributes.Add("selected", "true");
                 }
@@ -328,7 +328,7 @@ namespace Solomonic.WebGrid
             }
             var values = Enum.GetValues(typeof (TValues))
                 .Cast<TValues>()
-                .ToDictionary(v => v.ToString(), v => v.GetDescription() ?? v.ToString());
+                .ToDictionary(v => (object)(v.ToString()), v => v.GetDescription() ?? v.ToString());
             return FilterDropDown(webColumn, webSettings, values, attributes);
         }
 

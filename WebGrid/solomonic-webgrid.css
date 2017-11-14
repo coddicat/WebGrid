@@ -1,0 +1,119 @@
+﻿/*! Solomonic WebGrid - v1.0.0 - 2014-06-11
+* http://solomon-k.com
+* Copyright 2014, Shlomo Rodion Solomonik; Licensed MIT */
+/* Layout helpers
+----------------------------------*/
+.solomonic-table,
+.solomonic-inner-head-table {
+    table-layout: fixed!important;
+}
+
+.solomonic-table caption {
+    padding: 3px;
+}
+
+.solomonic-table td,
+.solomonic-table th {
+    text-align: center;
+    vertical-align: middle!important;
+}
+
+.solomonic-pager .pagination {
+    margin: 0px;
+    float: right;
+}
+
+.solomonic-table-search {
+    float: right;
+    display: block;
+}
+
+.solomonic-pager div {
+    display: inline;
+}
+
+.solomonic-pager div,
+.solomonic-itemsperpage,
+.solomonic-showcount {
+    display: inline;
+    float: left;
+}
+
+.solomonic-pager div,
+.solomonic-itemsperpage select,
+.solomonic-table-search input,
+.solomonic-table td label {
+    margin-left: 3px;
+    margin-right: 3px;
+    width: auto;
+}
+
+.solomonic-table .form-control {
+    display: inline;
+}
+
+.solomonic-table-search input {
+    margin-right: -25px;
+    padding-right: 25px;
+}
+
+.solomonic-table-search a {
+    margin-right: 10px;
+}
+
+.solomonic-table tr {
+    height: auto;
+}
+
+.solomonic-table thead {
+    height: auto;
+}
+
+.solomonic-table caption {
+    text-align: right;
+}
+
+.solomonic-table-caption-buttons {
+    display: inline;   
+}
+
+.solomonic-inner-table, 
+.solomonic-inner-head-table {
+    table-layout: fixed!important;
+    margin: 0!important;
+    border-style: none!important;
+    max-width: none!important;
+}
+
+
+.solomonic-table-main-td {
+    padding: 0!important;
+}
+.solomonic-main-head-th {
+    padding: 0px!important;
+    border-style: none!important;
+    overflow-x: hidden;
+}
+
+.solomonic-inner-table td:first-of-type,
+.solomonic-inner-head-table th:first-child {
+    border-left-style: none!important;
+}
+
+.solomonic-inner-head-table th {
+    border-bottom-style: none!important;
+}
+
+.solomonic-inner-table td:last-of-type,
+.solomonic-inner-head-table th:last-of-type {
+    border-right-style: none!important;
+}
+
+.solomonic-table-main-div {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.solomonic-empty-row {
+    visibility: collapse;
+}
